@@ -1,124 +1,75 @@
-# Product Detail & Mini-Cart Experience
+# PDP Mini-Cart Experience
 
-## 📋 Project Overview
-A modern e-commerce product detail page with integrated mini shopping cart functionality.
-
-## 🗓️ Development Timeline
-
-### ✅ DAY 1 - Project Scaffolding (CURRENT)
-- [x] Folder structure setup
-- [x] Clean HTML skeleton with semantic markup
-- [x] CSS styling with responsive layout
-- [x] DOM selectors and placeholder functions
-- [x] Sample product JSON data
-
-### ⏳ DAY 2 - Planned Features
-- [ ] Mini cart open/close functionality
-- [ ] Add to cart logic
-- [ ] Cart item management
-- [ ] Product variant selection
-- [ ] Image carousel/thumbnail switching
-- [ ] Quantity controls
-- [ ] Cart calculations (subtotal, tax, total)
-
-### ⏳ DAY 3+ - Future Enhancements
-- [ ] localStorage integration
-- [ ] Multiple product support
-- [ ] Animations & transitions
-- [ ] Form validation
-- [ ] Checkout flow
+A modern e-commerce product detail page with integrated mini shopping cart interface, built with vanilla HTML, CSS, and JavaScript.
 
 ---
 
-## 📁 Folder Structure
+## Day 1 Project Status
+
+- [x] Project folder structure initialized
+- [x] Static HTML skeleton for product detail page
+- [x] Responsive CSS layout with mobile-first approach
+- [x] Mini-cart sidebar UI placeholder
+- [x] DOM selectors and function stubs defined
+- [x] Sample product data structure (JSON)
+- [x] Git repository and initial commit
+
+---
+
+## Folder Structure
 
 ```
-/OJT
+pdp-mini-cart-experience/
 ├── templates/
-│   └── index.html              # Main product detail page
+│   └── index.html          # Product detail page template
 ├── static/
 │   ├── css/
-│   │   └── style.css           # All styles
+│   │   └── style.css       # Stylesheet
 │   └── js/
-│       └── app.js              # DOM selectors & placeholder functions
+│       └── app.js          # JavaScript placeholders
 ├── data/
-│   └── product.json            # Sample product data
-└── README.md                   # Project documentation
+│   └── product.json        # Sample product data
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## How to Preview Locally
 
-### Prerequisites
-- A modern web browser (Chrome, Firefox, Safari, Edge)
-- A local web server (optional but recommended)
+### Method 1: Direct File Open
+Open `templates/index.html` directly in your browser. Note: Some features may require a local server.
 
-### Installation
-
-1. Clone or download the project
-2. Open the project folder
-3. Serve the files using a local server:
-
-**Option 1: Using Python**
+### Method 2: Python HTTP Server
 ```bash
-# Python 3
 python -m http.server 8000
-
-# Then visit: http://localhost:8000/templates/
 ```
+Navigate to `http://localhost:8000/templates/`
 
-**Option 2: Using Node.js (http-server)**
-```bash
-npx http-server -p 8000
-
-# Then visit: http://localhost:8000/templates/
-```
-
-**Option 3: VS Code Live Server**
-- Install "Live Server" extension
-- Right-click on `index.html` → Open with Live Server
+### Method 3: VS Code Live Server
+Install the "Live Server" extension, then right-click `templates/index.html` and select "Open with Live Server".
 
 ---
 
-## 🎨 Features (Day 1)
+## Files Included in Day 1
 
-### ✅ Implemented
-- Mobile-first responsive layout
-- Product image gallery skeleton
-- Color and size variant selectors
-- Quantity controls UI
-- Add to Cart button
-- Mini cart sidebar (UI only)
-- Clean, modern design
-- Semantic HTML structure
-
-### 📦 Ready for Implementation (Day 2)
-- DOM selectors all defined
-- Event listener placeholders commented out
-- Function stubs with TODO comments
-- Cart state management hooks
-
----
-
-## 🗂️ File Details
-
-### `templates/index.html`
+**`templates/index.html`**
 - Semantic HTML5 structure
-- Product detail layout
-- Mini cart sidebar
-- Accessibility-ready markup
+- Product image gallery skeleton (4 thumbnails)
+- Variant selectors (color, size)
+- Quantity input controls
+- Add to Cart / Buy Now buttons
+- Mini-cart sidebar markup (closed by default)
 
-### `static/css/style.css`
+**`static/css/style.css`**
 - CSS custom properties for theming
-- Mobile-first responsive design
-- Flexbox & Grid layouts
-- Smooth transitions ready
-- Mini cart sidebar styling
+- Mobile-first responsive grid layout
+- Mini-cart sidebar styling (slide-in animation ready)
+- Breakpoints: 500px (mobile), 768px (tablet/desktop)
 
-### `static/js/app.js`
-- All DOM selectors defined
-- Placeholder functions:
+**`static/js/app.js`**
+- DOM element selectors defined
+- Placeholder functions with TODO comments:
   - `openMiniCart()`
   - `closeMiniCart()`
   - `handleAddToCart()`
@@ -129,71 +80,99 @@ npx http-server -p 8000
   - `handleThumbnailClick()`
   - `loadProductData()`
 
-### `data/product.json`
-- Complete product data structure
-- Multiple product images
-- Color variants (Black, White, Blue)
-- Size variants (S, M, L)
-- Pricing and discount info
-- Stock availability
-- Product specifications
+**`data/product.json`**
+- Product metadata (id, title, price, description)
+- Image URLs (4 placeholder images)
+- Variant definitions (colors: black, white, blue; sizes: S, M, L)
+- Stock and availability data
 
 ---
 
-## 🎯 Design Decisions
+## What is NOT Included in Day 1
 
-### Mobile-First Approach
-- Base styles optimized for mobile
-- Progressive enhancement for larger screens
-- Breakpoints at 768px and 500px
-
-### Color Scheme
-- Primary: Blue (#2563eb)
-- Neutral grays for text
-- Success/danger colors for feedback
-- Clean, professional aesthetic
-
-### Layout Structure
-- Single column on mobile
-- Two-column grid on tablet/desktop
-- Sticky header for better navigation
-- Slide-out cart sidebar
+- Cart functionality (add/remove items)
+- Mini-cart open/close interactions
+- Product variant selection logic
+- Image carousel/thumbnail switching
+- Quantity increment/decrement handlers
+- Cart calculations (subtotal, tax, total)
+- localStorage persistence
+- Dynamic product data loading
+- Form validation
+- Checkout flow
 
 ---
 
-## 🔧 Technical Stack
+## Development Roadmap
 
-- **HTML5** - Semantic markup
-- **CSS3** - Modern styling with custom properties
-- **Vanilla JavaScript** - No frameworks (yet)
-- **JSON** - Static data structure
-
----
-
-## 📝 Notes for Day 2
-
-1. Event listeners are commented out - uncomment when implementing
-2. Cart state should be managed in a global object
-3. Consider adding error handling for user interactions
-4. Product data loading function ready to be implemented
-5. All CSS transitions are in place for smooth animations
+**Day 2:** Mini-cart open/close, add to cart, cart item management  
+**Day 3:** Variant selection, image switching, quantity controls  
+**Day 4:** Cart calculations, cart state management  
+**Day 5:** localStorage integration, cart persistence  
+**Day 6:** Animations, transitions, UX polish  
+**Day 7:** Error handling, edge cases, final testing  
 
 ---
 
-## 🤝 Contributing
+## Pull Request: Day 1
 
-This is a learning project. Feel free to:
-- Add new features
-- Improve styling
-- Optimize code
-- Add documentation
+**Title:** Project Setup & UI Skeleton
+
+**Description:**
+```
+Created full project folder structure
+
+- Added index.html with static PDP layout
+- Added mini-cart sidebar placeholder
+- Added style.css with base responsive styles
+- Added app.js with placeholder functions
+- Added product.json with sample data
+```
 
 ---
 
-## 📄 License
+## Contribution & Code Style
 
-This project is open source and available for educational purposes.
+### Code Style
+- Use semantic HTML5 elements
+- Follow mobile-first CSS approach
+- Use descriptive variable and function names
+- Comment complex logic
+- Maintain consistent indentation (2 spaces)
+
+### Commit Messages
+- Use present tense, imperative mood
+- Prefix with component/feature name
+- Example: `feat: implement mini-cart open/close`
+
+### Pull Requests
+- One feature per PR
+- Include description of changes
+- Reference related issues if applicable
+- Ensure code follows project style guidelines
 
 ---
 
-**Current Status:** 🟢 Day 1 Complete - Ready for Day 2 Implementation
+## License
+
+MIT License
+
+Copyright (c) 2024
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
