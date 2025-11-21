@@ -17,7 +17,12 @@
         <div class="container">
             <div class="product-detail">
                 <div class="product-image">
-                    <img id="productImage" src="https://via.placeholder.com/600x600" alt="Product">
+                    <div class="carousel-container">
+                        <img id="productImage" src="https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Product_intro_12_M?$productIntroPlatemobile$&fmt=png-alpha" alt="Product">
+                        <button class="carousel-btn carousel-prev" id="carouselPrev">‹</button>
+                        <button class="carousel-btn carousel-next" id="carouselNext">›</button>
+                        <div class="carousel-dots" id="carouselDots"></div>
+                    </div>
                 </div>
 
                 <div class="product-info">
@@ -30,9 +35,10 @@
                         <select id="variantSelect" class="variant-select">
                             <option value="">Select variant</option>
                         </select>
+                        <div class="variant-buttons" id="variantButtons"></div>
                     </div>
 
-                    <button class="btn-primary" id="addToCartBtn">Add to Cart</button>
+                    <button class="btn-primary" id="addToCartBtn" disabled>Add to Cart</button>
                 </div>
             </div>
         </div>
