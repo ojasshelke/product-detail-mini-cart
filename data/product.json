@@ -1,119 +1,23 @@
 {
   "id": "prod-001",
   "title": "Premium Wireless Headphones",
-  "category": "Electronics",
   "price": 199.99,
-  "originalPrice": 249.99,
-  "discount": 20,
-  "currency": "USD",
-  "rating": 4.8,
-  "reviewCount": 234,
-  "description": "Experience superior sound quality with our premium wireless headphones. Featuring active noise cancellation, 30-hour battery life, and ultra-comfortable design. Perfect for music lovers and professionals alike.",
-  "features": [
-    "Active Noise Cancellation",
-    "30-hour battery life",
-    "Bluetooth 5.0 connectivity",
-    "Premium memory foam cushions",
-    "Foldable design with travel case"
-  ],
+  "description": "Experience superior sound quality with our premium wireless headphones.",
   "images": [
-    {
-      "id": "img-1",
-      "url": "https://via.placeholder.com/600x600/1e293b/ffffff?text=Headphones+Main",
-      "alt": "Premium Wireless Headphones - Front View",
-      "thumbnail": "https://via.placeholder.com/100x100/1e293b/ffffff?text=1"
-    },
-    {
-      "id": "img-2",
-      "url": "https://via.placeholder.com/600x600/2563eb/ffffff?text=Side+View",
-      "alt": "Premium Wireless Headphones - Side View",
-      "thumbnail": "https://via.placeholder.com/100x100/2563eb/ffffff?text=2"
-    },
-    {
-      "id": "img-3",
-      "url": "https://via.placeholder.com/600x600/10b981/ffffff?text=Detail+View",
-      "alt": "Premium Wireless Headphones - Detail",
-      "thumbnail": "https://via.placeholder.com/100x100/10b981/ffffff?text=3"
-    },
-    {
-      "id": "img-4",
-      "url": "https://via.placeholder.com/600x600/ef4444/ffffff?text=Folded+View",
-      "alt": "Premium Wireless Headphones - Folded",
-      "thumbnail": "https://via.placeholder.com/100x100/ef4444/ffffff?text=4"
-    }
+    "https://via.placeholder.com/600x600"
   ],
-  "variants": {
-    "colors": [
-      {
-        "id": "color-black",
-        "name": "Black",
-        "value": "black",
-        "hexCode": "#1e293b",
-        "available": true,
-        "stock": 45
-      },
-      {
-        "id": "color-white",
-        "name": "White",
-        "value": "white",
-        "hexCode": "#f8fafc",
-        "available": true,
-        "stock": 32
-      },
-      {
-        "id": "color-blue",
-        "name": "Blue",
-        "value": "blue",
-        "hexCode": "#2563eb",
-        "available": true,
-        "stock": 28
-      }
-    ],
-    "sizes": [
-      {
-        "id": "size-small",
-        "name": "Small",
-        "value": "small",
-        "label": "S",
-        "available": true,
-        "stock": 18
-      },
-      {
-        "id": "size-medium",
-        "name": "Medium",
-        "value": "medium",
-        "label": "M",
-        "available": true,
-        "stock": 56
-      },
-      {
-        "id": "size-large",
-        "name": "Large",
-        "value": "large",
-        "label": "L",
-        "available": true,
-        "stock": 34
-      }
-    ]
-  },
-  "specifications": {
-    "brand": "AudioPro",
-    "model": "AP-5000X",
-    "weight": "250g",
-    "dimensions": "19 x 17 x 8 cm",
-    "batteryLife": "30 hours",
-    "chargingTime": "2 hours",
-    "connectivity": "Bluetooth 5.0, 3.5mm jack",
-    "warranty": "2 years"
-  },
-  "shipping": {
-    "freeShipping": true,
-    "estimatedDelivery": "3-5 business days",
-    "returnPolicy": "30 days return"
-  },
-  "inStock": true,
-  "totalStock": 105,
-  "sku": "AUDIO-HP-5000X",
-  "tags": ["wireless", "headphones", "premium", "noise-cancelling", "electronics"]
+  "variants": [
+    {
+      "id": "variant-1",
+      "name": "Black"
+    },
+    {
+      "id": "variant-2",
+      "name": "White"
+    },
+    {
+      "id": "variant-3",
+      "name": "Blue"
+    }
+  ]
 }
-
