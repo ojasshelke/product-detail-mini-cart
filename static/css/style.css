@@ -57,12 +57,69 @@ body {
     overflow: hidden;
     border-radius: 8px;
     background-color: var(--bg-light);
+    position: relative;
 }
 
-.product-image img {
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-prev {
+    left: 10px;
+}
+
+.carousel-next {
+    right: 10px;
+}
+
+.carousel-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.carousel-dot.active {
+    background: var(--primary);
 }
 
 .product-info {
@@ -100,6 +157,28 @@ body {
     background-color: var(--bg);
 }
 
+.variant-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.variant-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.variant-btn.active {
+    background: var(--primary);
+    color: var(--bg);
+    border-color: var(--primary);
+}
+
 .btn-primary {
     padding: 0.875rem 1.5rem;
     background-color: var(--primary);
@@ -112,8 +191,13 @@ body {
     transition: opacity 0.2s;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
     opacity: 0.9;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .mini-cart {
