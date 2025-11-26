@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Detail</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <script>
+        // Inline fallback data for file:// protocol
+        window.FALLBACK_PRODUCT_DATA = {
+            "id": "prod-001",
+            "title": "Premium Wireless Headphones",
+            "price": 199.99,
+            "description": "Experience superior sound quality with our premium wireless headphones.",
+            "images": [
+                "https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Product_intro_12_M?$productIntroPlatemobile$&fmt=png-alpha",
+                "https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Product_intro_13_M?$productIntroPlatemobile$&fmt=png-alpha",
+                "https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Product_intro_15_M?$productIntroPlatemobile$&fmt=png-alpha"
+            ],
+            "variants": [
+                {"id": "variant-1", "name": "Black"},
+                {"id": "variant-2", "name": "White"},
+                {"id": "variant-3", "name": "Blue"}
+            ]
+        };
+        // API_BASE defaults to same-origin
+        window.API_BASE = window.API_BASE || '';
+    </script>
 </head>
 <body>
     <header class="header">
@@ -17,7 +38,12 @@
         <div class="container">
             <div class="product-detail">
                 <div class="product-image">
-                    <img id="productImage" src="https://via.placeholder.com/600x600" alt="Product">
+                    <div class="carousel-container">
+                        <img id="productImage" src="https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Product_intro_12_M?$productIntroPlatemobile$&fmt=png-alpha" alt="Product" loading="lazy" style="aspect-ratio: 4/3;">
+                        <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="Previous image">‹</button>
+                        <button class="carousel-btn carousel-next" id="carouselNext" aria-label="Next image">›</button>
+                        <div class="carousel-dots" id="carouselDots"></div>
+                    </div>
                 </div>
 
                 <div class="product-info">
@@ -30,24 +56,29 @@
                         <select id="variantSelect" class="variant-select">
                             <option value="">Select variant</option>
                         </select>
+                        <div class="variant-buttons" id="variantButtons" role="radiogroup" aria-label="Product variant"></div>
                     </div>
 
-                    <button class="btn-primary" id="addToCartBtn">Add to Cart</button>
+                    <button class="btn-primary" id="addToCartBtn" disabled aria-expanded="false" aria-controls="miniCart">Add to Cart</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <aside class="mini-cart" id="miniCart">
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="mini-cart" id="miniCart" aria-hidden="true" aria-label="Shopping cart">
         <div class="cart-header">
             <h2>Cart</h2>
-            <button class="close-btn" id="closeCart">×</button>
+            <button class="close-btn" id="closeCart" aria-label="Close cart">×</button>
         </div>
         <div class="cart-body" id="cartBody">
-            <p>Cart is empty</p>
+            <p class="cart-empty">Cart is empty</p>
         </div>
+        <div class="cart-footer" id="cartFooter" aria-live="polite" aria-atomic="true"></div>
     </aside>
 
+    <script src="/static/js/utils.js"></script>
+    <script src="/static/js/cart.js"></script>
     <script src="/static/js/app.js"></script>
 </body>
 </html>
