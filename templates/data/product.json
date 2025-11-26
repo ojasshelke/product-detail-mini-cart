@@ -1,0 +1,25 @@
+{
+  "id": "prod-001",
+  "title": "Premium Wireless Headphones",
+  "price": 199.99,
+  "description": "Experience superior sound quality with our premium wireless headphones.",
+  "images": [
+    "https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Product_intro_12_M?$productIntroPlatemobile$&fmt=png-alpha",
+    "https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Product_intro_13_M?$productIntroPlatemobile$&fmt=png-alpha",
+    "https://sony.scene7.com/is/image/sonyglobalsolutions/WH1000XM6_Product_intro_15_M?$productIntroPlatemobile$&fmt=png-alpha"
+  ],
+  "variants": [
+    {
+      "id": "variant-1",
+      "name": "Black"
+    },
+    {
+      "id": "variant-2",
+      "name": "White"
+    },
+    {
+      "id": "variant-3",
+      "name": "Blue"
+    }
+  ]
+}

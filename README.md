@@ -1,18 +1,26 @@
 # PDP Mini-Cart Experience
 
-A modern e-commerce product detail page with integrated mini shopping cart interface, built with vanilla HTML, CSS, and JavaScript.
+A modern e-commerce product detail page with integrated mini shopping cart interface, built with vanilla HTML, CSS, JavaScript, and Flask backend.
+
+**Live Demo:**
+- Frontend: FRONTEND_URL
+- Backend API: BACKEND_URL
 
 ---
 
-## Day 1 Project Status
+## Days 1-10 Project Status
 
-- [x] Project folder structure initialized
-- [x] Static HTML skeleton for product detail page
-- [x] Responsive CSS layout with mobile-first approach
-- [x] Mini-cart sidebar UI placeholder
-- [x] DOM selectors and function stubs defined
-- [x] Sample product data structure (JSON)
-- [x] Git repository and initial commit
+### Core Features Completed
+- [x] Product detail page with image carousel and variant selection
+- [x] Mini shopping cart with add/remove/update functionality
+- [x] Cart persistence with localStorage
+- [x] Responsive design and accessibility features
+- [x] Flask backend API for product data and analytics
+- [x] API fallback logic and defensive error handling
+- [x] Deployment configurations for Netlify and cloud platforms
+- [x] Cart merge logic using productId + variantId
+- [x] Analytics dashboard with zero-data handling
+- [x] Unit tests with real cart module
 
 ---
 
@@ -20,114 +28,321 @@ A modern e-commerce product detail page with integrated mini shopping cart inter
 
 ```
 pdp-mini-cart-experience/
+├── server/
+│   ├── app.py              # Flask backend API (absolute paths)
+│   ├── requirements.txt    # Python dependencies
+│   └── analytics.log       # Analytics event log (generated)
 ├── templates/
-│   └── index.html          # Product detail page template
+│   ├── index.html          # Product detail page template
+│   └── data/
+│       └── product.json    # Fallback product data for frontend
 ├── static/
 │   ├── css/
 │   │   └── style.css       # Stylesheet
 │   └── js/
-│       └── app.js          # JavaScript placeholders
+│       ├── app.js          # Main application logic
+│       ├── cart.js         # Cart module (CommonJS + Browser)
+│       └── utils.js        # Utility functions
 ├── data/
-│   └── product.json        # Sample product data
+│   └── product.json        # Backend product data source
+├── dashboard/
+│   ├── dashboard.html      # Analytics dashboard
+│   └── static/
+│       └── js/
+│           └── dashboard.js # Dashboard logic
+├── tests/
+│   └── test_cart_console.js # Node.js cart tests
+├── docs/
+│   └── test-report.md      # Test report template
+├── Procfile                # Heroku/Render deployment
+├── netlify.toml           # Netlify configuration
 ├── .gitignore
 └── README.md
 ```
 
 ---
 
-## How to Preview Locally
+## How to Run Locally
 
-### Method 1: Direct File Open
-Open `templates/index.html` directly in your browser. Note: Some features may require a local server.
+### Frontend Only (Standalone Mode)
 
-### Method 2: Python HTTP Server
+Open `templates/index.html` directly in your browser. The page includes inline fallback data (`window.FALLBACK_PRODUCT_DATA`) for offline usage in `file://` protocol mode.
+
+Alternatively, serve with a static server:
+
 ```bash
 python -m http.server 8000
+# Navigate to http://localhost:8000/templates/
 ```
-Navigate to `http://localhost:8000/templates/`
 
-### Method 3: VS Code Live Server
-Install the "Live Server" extension, then right-click `templates/index.html` and select "Open with Live Server".
+The frontend will work standalone using:
+1. Inline fallback data (for `file://` protocol)
+2. Local JSON fallback (`./data/product.json` relative to `templates/`)
+
+### Full Stack (Frontend + Backend)
+
+1. **Backend Setup:**
+```bash
+cd server
+pip install -r requirements.txt
+python app.py
+```
+Backend runs on `http://localhost:5000` (or PORT env variable)
+
+2. **Frontend Setup:**
+
+Serve the frontend:
+
+```bash
+python -m http.server 8000
+# Navigate to http://localhost:8000/templates/
+```
+
+3. **Configure API Connection:**
+
+By default, frontend uses **same-origin** for API calls. To connect to a backend on a different domain or port:
+
+```html
+<!-- In templates/index.html, modify the script tag: -->
+<script>
+  window.API_BASE = 'http://localhost:5000';  // For local dev
+  // OR
+  window.API_BASE = 'https://your-backend.herokuapp.com';  // For production
+</script>
+```
+
+4. **View Analytics Dashboard:**
+
+```bash
+# Open http://localhost:8000/dashboard/dashboard.html
+```
 
 ---
 
-## Files Included in Day 1
+## API_BASE Behavior (Critical for Deployment)
 
-**`templates/index.html`**
-- Semantic HTML5 structure
-- Product image gallery skeleton (4 thumbnails)
-- Variant selectors (color, size)
-- Quantity input controls
-- Add to Cart / Buy Now buttons
-- Mini-cart sidebar markup (closed by default)
+The frontend uses a **same-origin default** for API calls:
 
-**`static/css/style.css`**
-- CSS custom properties for theming
-- Mobile-first responsive grid layout
-- Mini-cart sidebar styling (slide-in animation ready)
-- Breakpoints: 500px (mobile), 768px (tablet/desktop)
+```javascript
+const API_BASE = window.API_BASE || '';
+fetch(`${API_BASE}/api/products`);
+```
 
-**`static/js/app.js`**
-- DOM element selectors defined
-- Placeholder functions with TODO comments:
-  - `openMiniCart()`
-  - `closeMiniCart()`
-  - `handleAddToCart()`
-  - `updateCartDisplay()`
-  - `handleQuantityIncrease()`
-  - `handleQuantityDecrease()`
-  - `handleVariantSelection()`
-  - `handleThumbnailClick()`
-  - `loadProductData()`
+### How It Works:
 
-**`data/product.json`**
-- Product metadata (id, title, price, description)
-- Image URLs (4 placeholder images)
-- Variant definitions (colors: black, white, blue; sizes: S, M, L)
-- Stock and availability data
+| Scenario | `window.API_BASE` Value | Fetch URL Result |
+|----------|------------------------|------------------|
+| Same domain deployment | `undefined` (default) | `/api/products` (same-origin) |
+| Local dev (different ports) | `'http://localhost:5000'` | `http://localhost:5000/api/products` |
+| Production (different domains) | `'https://api.example.com'` | `https://api.example.com/api/products` |
+
+### Configuration Methods:
+
+**Method 1: Inline Script (recommended for production)**
+```html
+<script>
+  window.API_BASE = 'https://your-backend-api.com';
+</script>
+```
+
+**Method 2: Environment-based injection during build**
+```javascript
+// In your build process, replace placeholder
+window.API_BASE = '{{ BACKEND_URL }}';
+```
 
 ---
 
-## What is NOT Included in Day 1
+## Product Data Locations
 
-- Cart functionality (add/remove items)
-- Mini-cart open/close interactions
-- Product variant selection logic
-- Image carousel/thumbnail switching
-- Quantity increment/decrement handlers
-- Cart calculations (subtotal, tax, total)
+The application uses a **three-tier fallback system** for product data:
+
+1. **Backend API** (`/api/products`) - Reads from `data/product.json` using absolute paths
+2. **Frontend Fallback** (`./data/product.json`) - Relative to `templates/index.html`, served from `templates/data/product.json`
+3. **Inline Fallback** (`window.FALLBACK_PRODUCT_DATA`) - Embedded in HTML for `file://` protocol support
+
+### For Deployment:
+
+- **Backend** reads from: `data/product.json` (repo root)
+- **Frontend** fallback reads from: `templates/data/product.json`
+- **Offline mode** uses: inline `window.FALLBACK_PRODUCT_DATA` in `templates/index.html`
+
+---
+
+## Cart Merge Logic (productId + variantId)
+
+The cart now correctly merges items using **both** `productId` AND `variantId`:
+
+```javascript
+// Correct merge logic
+cart.addItem({
+    productId: 'prod-001',
+    variantId: 'variant-1',
+    title: 'Headphones',
+    price: 199.99,
+    qty: 1
+});
+
+// Different products with same variantId stay separate
+cart.addItem({ productId: 'prod-002', variantId: 'variant-1', ... }); // No collision!
+
+// Same product + variant increments quantity
+cart.addItem({ productId: 'prod-001', variantId: 'variant-1', ... }); // Qty += 1
+```
+
+---
+
+## Key Files
+
+**`server/app.py`** - Flask backend with absolute file paths (`os.path.join(os.path.dirname(__file__), ...)`)  
+**`server/requirements.txt`** - Python dependencies (Flask, flask-cors, gunicorn)  
+**`templates/index.html`** - Product detail page with inline fallback data  
+**`static/js/app.js`** - Frontend application with API integration  
+**`static/js/cart.js`** - Cart module with productId+variantId merge logic (CommonJS + browser compatible)  
+**`static/js/utils.js`** - Utility functions (debounce, formatCurrency, animateCount)  
+**`static/css/style.css`** - Responsive styles with accessibility features  
+**`data/product.json`** - Backend product data source  
+**`templates/data/product.json`** - Frontend fallback product data  
+**`dashboard/dashboard.html`** - Analytics visualization dashboard  
+**`dashboard/static/js/dashboard.js`** - Dashboard logic with Chart.js  
+**`tests/test_cart_console.js`** - Node.js unit tests for cart module  
+**`docs/test-report.md`** - Manual testing checklist and procedures
+
+---
+
+## Testing
+
+### Manual Testing
+See `docs/test-report.md` for comprehensive manual test procedures.
+
+### Unit Tests (Node.js)
+Run cart module tests:
+
+```bash
+cd tests
+node test_cart_console.js
+```
+
+Tests verify:
+- Cart item addition and merging by `productId` AND `variantId`
+- No collision between different products with same variantId
+- Quantity updates and removals
+- Total calculation
 - localStorage persistence
-- Dynamic product data loading
-- Form validation
-- Checkout flow
+- CommonJS export compatibility
+
+Expected output:
+```
+=== Cart Module Tests ===
+✓ PASS: Should have 1 item
+✓ PASS: Should have 2 items (no collision)
+...
+✓ All tests passed!
+```
 
 ---
 
-## Development Roadmap
+## Day-by-Day Changelog
 
-**Day 2:** Mini-cart open/close, add to cart, cart item management  
-**Day 3:** Variant selection, image switching, quantity controls  
-**Day 4:** Cart calculations, cart state management  
-**Day 5:** localStorage integration, cart persistence  
-**Day 6:** Animations, transitions, UX polish  
-**Day 7:** Error handling, edge cases, final testing  
+**Day 1:** Project setup, HTML skeleton, responsive CSS, mini-cart UI placeholder, sample data structure  
+**Day 2:** Mini-cart interactions, add-to-cart functionality, cart item management  
+**Day 3:** Variant selection logic, image carousel switching, quantity controls  
+**Day 4:** Cart calculations, state management, accessibility improvements  
+**Day 5:** localStorage persistence, cart data persistence across sessions  
+**Day 6:** Flask backend API, product data endpoint, analytics logging endpoint  
+**Day 7:** API fallback logic, deployment configurations (Procfile, netlify.toml)  
+**Day 8:** Defensive error handling, localStorage corruption recovery, double-click prevention, image placeholders  
+**Day 9:** Documentation updates, test report template, deployment instructions  
+**Day 10:** Final fixes - absolute paths, cart merge logic, dashboard, unit tests
 
 ---
 
-## Pull Request: Day 1
+## Deployment
 
-**Title:** Project Setup & UI Skeleton
+### Frontend (Netlify)
+1. Connect repository to Netlify
+2. Build settings: Use `netlify.toml` configuration (publish `templates/` folder)
+3. Deploy automatically on git push
+4. **Configure API Base (if backend on different domain):**
+   - Add environment variable or modify `templates/index.html`:
+   ```html
+   <script>
+     window.API_BASE = 'https://your-backend.herokuapp.com';
+   </script>
+   ```
 
-**Description:**
+### Backend (Render/Heroku)
+1. **Render:** Connect repo, select Python, use commands:
+   - Build: `cd server && pip install -r requirements.txt`
+   - Start: `cd server && gunicorn app:app`
+2. **Heroku:** Use `Procfile`, deploy via git push or GitHub integration
+3. Environment variable `PORT` (auto-assigned by platform)
+4. Backend uses absolute paths for:
+   - Product data: `os.path.join(os.path.dirname(__file__), '..', 'data', 'product.json')`
+   - Analytics log: `os.path.join(os.path.dirname(__file__), 'analytics.log')`
+
+### Same-Domain Deployment (Advanced)
+
+If you want to serve both frontend and backend from the same domain:
+
+1. Use Flask to serve static files:
+```python
+@app.route('/')
+def index():
+    return send_from_directory('../templates', 'index.html')
+
+@app.route('/static/<path:path>')
+def serve_static(path):
+    return send_from_directory('../static', path)
 ```
-Created full project folder structure
 
-- Added index.html with static PDP layout
-- Added mini-cart sidebar placeholder
-- Added style.css with base responsive styles
-- Added app.js with placeholder functions
-- Added product.json with sample data
-```
+2. No `window.API_BASE` configuration needed - uses same-origin by default!
+
+---
+
+## API Endpoints
+
+- `GET /api/products` - Returns product JSON data
+- `POST /api/analytics` - Records analytics events (event, payload, timestamp)
+- `GET /api/analytics` - Retrieves all analytics events (for dashboard)
+
+Analytics data is appended to `server/analytics.log` using absolute paths.
+
+---
+
+## Known Issues & Future Work
+
+**Current Limitations:**
+- Demo backend stores analytics in flat file (not suitable for production)
+- No user authentication or real database
+- Basic error handling for development/demo purposes
+- No payment processing or checkout flow
+
+**Future Enhancements:**
+- Database integration (PostgreSQL/SQLite)
+- User authentication and session management
+- Payment gateway integration
+- Advanced analytics and reporting
+- Admin panel for product management
+- Order history and user accounts
+
+## Final Submission: Days 1-10 Complete
+
+**Status:** ✅ All features implemented and tested  
+**Demo:** FRONTEND_URL  
+**API:** BACKEND_URL  
+**Test Report:** See `docs/test-report.md`
+
+**Features Delivered:**
+- Complete PDP with image carousel and variant selection
+- Functional mini-cart with persistence
+- Flask API backend with analytics logging (absolute paths)
+- Responsive design with accessibility features
+- API fallback and defensive error handling (file:// support)
+- Deployment configurations for production
+- Cart merge logic using productId + variantId (collision-free)
+- Analytics dashboard with Chart.js and zero-data handling
+- Unit tests with real cart module (CommonJS compatible)
 
 ---
 
