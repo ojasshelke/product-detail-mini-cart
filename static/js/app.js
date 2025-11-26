@@ -1,148 +1,257 @@
-// ================================
-// DOM SELECTORS
-// ================================
+let currentImageIndex = 0;
+let selectedVariant = '';
+let images = [];
+let productData = null;
+let variantsMap = {};
+let lastFocusedElement = null;
+let addToCartLock = false;
+let cart = null;
 
-// Header & Cart
-const cartToggle = document.getElementById('cartToggle');
-const miniCart = document.getElementById('miniCart');
-const cartOverlay = document.getElementById('cartOverlay');
-const closeCart = document.getElementById('closeCart');
-const cartBadge = document.getElementById('cartBadge');
+const API_BASE = window.API_BASE || '';
+const PLACEHOLDER_IMG = 'https://via.placeholder.com/800x600?text=No+Image';
 
-// Product Details
-const mainImage = document.getElementById('mainImage');
-const productTitle = document.getElementById('productTitle');
-const productPrice = document.getElementById('productPrice');
-const productDescription = document.getElementById('productDescription');
-
-// Variants
-const colorOptions = document.getElementById('colorOptions');
-const sizeOptions = document.getElementById('sizeOptions');
-const variantButtons = document.querySelectorAll('.variant-btn');
-
-// Quantity
-const decreaseQty = document.getElementById('decreaseQty');
-const increaseQty = document.getElementById('increaseQty');
-const quantityInput = document.getElementById('quantity');
-
-// Actions
+const productImage = document.getElementById('productImage');
+const carouselPrev = document.getElementById('carouselPrev');
+const carouselNext = document.getElementById('carouselNext');
+const carouselDots = document.getElementById('carouselDots');
+const variantSelect = document.getElementById('variantSelect');
+const variantButtons = document.getElementById('variantButtons');
 const addToCartBtn = document.getElementById('addToCartBtn');
-
-// Cart Elements
+const miniCart = document.getElementById('miniCart');
+const closeCart = document.getElementById('closeCart');
 const cartBody = document.getElementById('cartBody');
-const cartItems = document.getElementById('cartItems');
-const emptyCart = document.getElementById('emptyCart');
+const cartOverlay = document.getElementById('cartOverlay');
 const cartFooter = document.getElementById('cartFooter');
-const cartSubtotal = document.getElementById('cartSubtotal');
-const cartTax = document.getElementById('cartTax');
-const cartTotal = document.getElementById('cartTotal');
 
-// Thumbnails
-const thumbnails = document.querySelectorAll('.thumbnail');
+function debounce(fn, delay) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), delay);
+    };
+}
 
+function trapFocus(element) {
+    const focusableElements = element.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
 
-// ================================
-// PLACEHOLDER FUNCTIONS
-// ================================
+    function handleTab(e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            }
+        } else {
+            if (document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
+    }
 
-/**
- * Opens the mini cart sidebar
- */
+    element.addEventListener('keydown', handleTab);
+    if (firstElement) firstElement.focus();
+    
+    return () => element.removeEventListener('keydown', handleTab);
+}
+
+let focusTrapCleanup = null;
+
 function openMiniCart() {
-    // TODO: Day 2 - Add functionality to open mini cart
+    lastFocusedElement = document.activeElement;
+    miniCart.classList.add('visible');
+    miniCart.setAttribute('aria-hidden', 'false');
+    if (addToCartBtn) addToCartBtn.setAttribute('aria-expanded', 'true');
+    if (cartOverlay) cartOverlay.classList.add('visible');
+    focusTrapCleanup = trapFocus(miniCart);
 }
 
-/**
- * Closes the mini cart sidebar
- */
 function closeMiniCart() {
-    // TODO: Day 2 - Add functionality to close mini cart
+    miniCart.classList.remove('visible');
+    miniCart.setAttribute('aria-hidden', 'true');
+    if (addToCartBtn) addToCartBtn.setAttribute('aria-expanded', 'false');
+    if (cartOverlay) cartOverlay.classList.remove('visible');
+    if (focusTrapCleanup) {
+        focusTrapCleanup();
+        focusTrapCleanup = null;
+    }
+    if (lastFocusedElement) {
+        lastFocusedElement.focus();
+        lastFocusedElement = null;
+    }
 }
 
-/**
- * Handles adding product to cart
- */
+async function loadProductData() {
+    try {
+        // Try API first
+        const apiResponse = await fetch(`${API_BASE}/api/products`);
+        if (apiResponse.ok) {
+            const data = await apiResponse.json();
+            initializeProduct(data);
+            return;
+        }
+    } catch (e) {
+        console.log('API fetch failed, falling back to local JSON:', e);
+    }
+
+    // Fallback to local JSON
+    try {
+        const response = await fetch('./data/product.json');
+        const data = await response.json();
+        initializeProduct(data);
+    } catch (e) {
+        console.error('Fallback fetch failed, using inline data:', e);
+        // Inline fallback for file:// mode
+        if (window.location.protocol === 'file:' && window.FALLBACK_PRODUCT_DATA) {
+            initializeProduct(window.FALLBACK_PRODUCT_DATA);
+        } else {
+            console.error('No product data available');
+        }
+    }
+}
+
+function initializeProduct(data) {
+    productData = data;
+    images = data.images || [];
+    data.variants.forEach(v => { variantsMap[v.id] = v.name; });
+    
+    initCarousel();
+    initVariants(data.variants);
+    
+    document.getElementById('productTitle').textContent = data.title;
+    document.getElementById('productPrice').textContent = `$${data.price.toFixed(2)}`;
+    document.getElementById('productDescription').textContent = data.description;
+    
+    // Initialize cart with variants map
+    if (typeof Cart !== 'undefined') {
+        cart = new Cart();
+        cart.init(cartBody, cartFooter, variantsMap);
+        cart.load();
+    }
+}
+
+function initCarousel() {
+    if (images.length === 0) {
+        images = [PLACEHOLDER_IMG];
+    }
+    productImage.src = images[0] || PLACEHOLDER_IMG;
+    productImage.onerror = () => { productImage.src = PLACEHOLDER_IMG; };
+    createDots();
+    updateCarousel();
+}
+
+function createDots() {
+    carouselDots.innerHTML = '';
+    images.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot';
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToImage(index));
+        carouselDots.appendChild(dot);
+    });
+}
+
+function updateCarousel() {
+    productImage.src = images[currentImageIndex] || PLACEHOLDER_IMG;
+    productImage.onerror = () => { productImage.src = PLACEHOLDER_IMG; };
+    document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentImageIndex);
+    });
+}
+
+function goToImage(index) {
+    currentImageIndex = index;
+    updateCarousel();
+}
+
+function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    updateCarousel();
+}
+
+function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    updateCarousel();
+}
+
+function initVariants(variants) {
+    variants.forEach((variant, index) => {
+        const option = document.createElement('option');
+        option.value = variant.id;
+        option.textContent = variant.name;
+        variantSelect.appendChild(option);
+
+        const btn = document.createElement('button');
+        btn.className = 'variant-btn';
+        btn.textContent = variant.name;
+        btn.dataset.variantId = variant.id;
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', 'false');
+        btn.setAttribute('tabindex', index === 0 ? '0' : '-1');
+        btn.addEventListener('click', () => selectVariant(variant.id));
+        variantButtons.appendChild(btn);
+    });
+}
+
+function selectVariant(variantId) {
+    selectedVariant = variantId;
+    variantSelect.value = variantId;
+    document.querySelectorAll('.variant-btn').forEach(btn => {
+        const isActive = btn.dataset.variantId === variantId;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
+        btn.setAttribute('tabindex', isActive ? '0' : '-1');
+    });
+    addToCartBtn.disabled = !variantId;
+}
+
 function handleAddToCart() {
-    // TODO: Day 2 - Add functionality to add product to cart
+    if (!selectedVariant || addToCartLock || !cart) return;
+
+    addToCartLock = true;
+    setTimeout(() => { addToCartLock = false; }, 300);
+
+    const price = parseFloat(document.getElementById('productPrice').textContent.replace('$', ''));
+    const title = document.getElementById('productTitle').textContent;
+    
+    cart.addItem({
+        productId: productData.id,
+        variantId: selectedVariant,
+        title: title,
+        price: price,
+        qty: 1,
+        image: images[currentImageIndex] || PLACEHOLDER_IMG
+    });
+    
+    openMiniCart();
 }
 
-/**
- * Updates cart display
- */
-function updateCartDisplay() {
-    // TODO: Day 2 - Add functionality to update cart display
-}
+carouselPrev.addEventListener('click', prevImage);
+carouselNext.addEventListener('click', nextImage);
+variantSelect.addEventListener('change', (e) => selectVariant(e.target.value));
+addToCartBtn.addEventListener('click', handleAddToCart);
+closeCart.addEventListener('click', closeMiniCart);
+if (cartOverlay) cartOverlay.addEventListener('click', closeMiniCart);
 
-/**
- * Handles quantity increase
- */
-function handleQuantityIncrease() {
-    // TODO: Day 2 - Add functionality to increase quantity
-}
-
-/**
- * Handles quantity decrease
- */
-function handleQuantityDecrease() {
-    // TODO: Day 2 - Add functionality to decrease quantity
-}
-
-/**
- * Handles variant selection
- */
-function handleVariantSelection(event) {
-    // TODO: Day 2 - Add functionality to handle variant selection
-}
-
-/**
- * Handles thumbnail image click
- */
-function handleThumbnailClick(event) {
-    // TODO: Day 2 - Add functionality to change main image
-}
-
-/**
- * Loads product data
- */
-function loadProductData() {
-    // TODO: Day 2 - Load product data from product.json
-}
-
-
-// ================================
-// EVENT LISTENERS (Ready for Day 2)
-// ================================
-
-// Cart toggle events
-// cartToggle.addEventListener('click', openMiniCart);
-// closeCart.addEventListener('click', closeMiniCart);
-// cartOverlay.addEventListener('click', closeMiniCart);
-
-// Add to cart button
-// addToCartBtn.addEventListener('click', handleAddToCart);
-
-// Quantity controls
-// increaseQty.addEventListener('click', handleQuantityIncrease);
-// decreaseQty.addEventListener('click', handleQuantityDecrease);
-
-// Variant selection
-// variantButtons.forEach(button => {
-//     button.addEventListener('click', handleVariantSelection);
-// });
-
-// Thumbnail clicks
-// thumbnails.forEach(thumbnail => {
-//     thumbnail.addEventListener('click', handleThumbnailClick);
-// });
-
-
-// ================================
-// INITIALIZATION
-// ================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Product Detail & Mini-Cart - Day 1 Scaffold Loaded');
-    console.log('📦 DOM selectors ready');
-    console.log('⏳ Waiting for Day 2 implementation...');
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && miniCart.classList.contains('visible')) {
+        closeMiniCart();
+        return;
+    }
+    const activeElement = document.activeElement;
+    const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable
+    );
+    if (!isInputFocused) {
+        if (e.key === 'ArrowLeft') prevImage();
+        if (e.key === 'ArrowRight') nextImage();
+    }
 });
 
+document.addEventListener('DOMContentLoaded', loadProductData);
